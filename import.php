@@ -1,6 +1,10 @@
 <?php
 
-composer require google/apiclient
+//* Import Sheets API using composer.
+//* Composer is included as standard by most web hosts - your server probably supports it.
+
+// composer require google/apiclient
+require 'vendor/autoload.php';
 
 class GoogleSheetToMySQL
 {
