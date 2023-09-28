@@ -18,6 +18,7 @@ $dbConfig = [
     'password' => '',
     'database' => 'database_name',
 ];
+
 $sheetConfig = [
     'Sheet1' => ['mode' => 'replace'],
     'Sheet2' => ['mode' => 'append'],
@@ -73,12 +74,12 @@ class GoogleSheetImporter
                 case 'insert':
                     $this->insertRows($tableName, $header, $values);
                     break;
-                case 'insertUnique':
-                    $uniqueColumn = $sheetSettings['uniqueColumn'];
+                case 'unique':
+                    $uniqueColumn = $sheetSettings['unique_column'];
                     $this->insertUniqueRows($tableName, $header, $values, $uniqueColumn);
                     break;
                 case 'upsert':
-                    $uniqueColumn = $sheetSettings['uniqueColumn'];
+                    $uniqueColumn = $sheetSettings['unique_column'];
                     $this->upsertRows($tableName, $header, $values, $uniqueColumn);
                     break;
                 case 'append':
@@ -90,7 +91,6 @@ class GoogleSheetImporter
 
     private function createOrUpdateTable($tableName, $header)
     {
-        //* Function create or update table based on header
         $columns = implode(', ', array_map(function ($col) {
             return "`$col` TEXT";
         }, $header));
@@ -100,7 +100,6 @@ class GoogleSheetImporter
 
     private function addNewColumns($tableName, $header)
     {
-        //* Function check and add new columns in the table found in the header
         $existingColumns = $this->getColumns($tableName);
         $newColumns = array_diff($header, $existingColumns);
         foreach ($newColumns as $col) {
@@ -121,81 +120,84 @@ class GoogleSheetImporter
 
     private function insertRows($tableName, $header, $values)
     {
+        $rowsSql = [];
         foreach ($values as $row) {
             $rowData = array_combine($header, $row);
-            $columns = implode(', ', array_map(function ($col) {
-                return "`$col`";
-            }, array_keys($rowData)));
             $valuesStr = implode(', ', array_map(function ($val) {
                 return "'" . $this->conn->real_escape_string($val) . "'";
             }, $rowData));
-            $sql = "INSERT INTO `$tableName` ($columns) VALUES ($valuesStr)";
+            $rowsSql[] = "($valuesStr)";
+        }
+        if (!empty($rowsSql)) {
+            $columns = implode(', ', array_map(function ($col) {
+                return "`$col`";
+            }, $header));
+            $sql = "INSERT INTO `$tableName` ($columns) VALUES " . implode(', ', $rowsSql);
             $this->conn->query($sql);
         }
     }
 
     private function insertUniqueRows($tableName, $header, $values, $uniqueColumn)
     {
-        //* Function insert unique rows into the table based on the uniqueColumn
-        $uniqueColumn = $this->conn->real_escape_string($uniqueColumn);
+        $rowsSql = [];
+        $existingValues = $this->getExistingValues($tableName, $uniqueColumn);
         foreach ($values as $row) {
             $rowData = array_combine($header, $row);
+            if (!in_array($rowData[$uniqueColumn], $existingValues)) {
+                $valuesStr = implode(', ', array_map(function ($val) {
+                    return "'" . $this->conn->real_escape_string($val) . "'";
+                }, $rowData));
+                $rowsSql[] = "($valuesStr)";
+            }
+        }
+        if (!empty($rowsSql)) {
             $columns = implode(', ', array_map(function ($col) {
                 return "`$col`";
-            }, array_keys($rowData)));
-            $valuesStr = implode(', ', array_map(function ($val) {
-                return "'" . $this->conn->real_escape_string($val) . "'";
-            }, $rowData));
-
-            $uniqueValue = $rowData[$uniqueColumn];
-            $sqlCheck = "SELECT * FROM `$tableName` WHERE `$uniqueColumn` = '$uniqueValue'";
-            $result = $this->conn->query($sqlCheck);
-
-            if ($result->num_rows === 0) {
-                $sql = "INSERT INTO `$tableName` ($columns) VALUES ($valuesStr)";
-                $this->conn->query($sql);
-            }
+            }, $header));
+            $sql = "INSERT INTO `$tableName` ($columns) VALUES " . implode(', ', $rowsSql);
+            $this->conn->query($sql);
         }
     }
 
     private function upsertRows($tableName, $header, $values, $uniqueColumn)
     {
-        //* Function upsert rows into the table based on the uniqueColumn
-        $uniqueColumn = $this->conn->real_escape_string($uniqueColumn);
+        $rowsSql = [];
         foreach ($values as $row) {
             $rowData = array_combine($header, $row);
-            $columns = implode(', ', array_map(function ($col) {
-                return "`$col`";
-            }, array_keys($rowData)));
             $valuesStr = implode(', ', array_map(function ($val) {
                 return "'" . $this->conn->real_escape_string($val) . "'";
             }, $rowData));
-
-            $uniqueValue = $rowData[$uniqueColumn];
-            $sqlCheck = "SELECT * FROM `$tableName` WHERE `$uniqueColumn` = '$uniqueValue'";
-            $result = $this->conn->query($sqlCheck);
-
-            if ($result->num_rows === 0) {
-                $sql = "INSERT INTO `$tableName` ($columns) VALUES ($valuesStr)";
-            } else {
-                $updateStr = implode(', ', array_map(function ($col, $val) {
-                    return "`$col` = '" . $this->conn->real_escape_string($val) . "'";
-                }, array_keys($rowData), $rowData));
-                $sql = "UPDATE `$tableName` SET $updateStr WHERE `$uniqueColumn` = '$uniqueValue'";
-            }
+            $rowsSql[] = "($valuesStr)";
+            $updateStr = implode(', ', array_map(function ($col, $val) {
+                return "`$col` = '" . $this->conn->real_escape_string($val) . "'";
+            }, array_keys($rowData), $rowData));
+            $updateSql[] = $updateStr;
+        }
+        if (!empty($rowsSql)) {
+            $columns = implode(', ', array_map(function ($col) {
+                return "`$col`";
+            }, $header));
+            $sql = "INSERT INTO `$tableName` ($columns) VALUES " . implode(', ', $rowsSql) . " ON DUPLICATE KEY UPDATE " . implode(', ', $updateSql);
             $this->conn->query($sql);
         }
     }
 
     private function appendRows($tableName, $header, $values)
     {
-        //* Function append rows to the existing table
         $this->insertRows($tableName, $header, $values);
+    }
+
+    private function getExistingValues($tableName, $columnName)
+    {
+        $result = $this->conn->query("SELECT `$columnName` FROM `$tableName`");
+        $values = [];
+        while ($row = $result->fetch_assoc()) {
+            $values[] = $row[$columnName];
+        }
+        return $values;
     }
 }
 
-//* Instantiate the class and call the importSheets method
 $importer = new GoogleSheetImporter($spreadsheetId, $dbConfig, $sheetConfig, $createTables, $modifyTables);
 $importer->importSheets();
 
-?>
