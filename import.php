@@ -2,8 +2,10 @@
 
 // User Configurable Settings
 $spreadsheetId = 'your_spreadsheet_id';
+
 $createTables = true;
 $modifyTables = true;
+
 $dbConfig = [
     'host' => 'localhost',
     'username' => 'root',
