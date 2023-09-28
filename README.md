@@ -9,6 +9,10 @@ There are four possible import modes, which can be decided on individually for e
 * "Upsert" - add new rows and modify existing ones. Useful if there are extra columns that you want to retain.
 
 <hr>
+<strong>Please note</strong>
+This script is being actively developed (Oct 2023) - it may not be stable yet.
+
+<hr>
 <strong>Version History</strong>
 
 0.3
