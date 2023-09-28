@@ -1,5 +1,8 @@
 <?php
 
+//* Composer dependency for Google Sheets API
+require_once 'vendor/autoload.php';
+
 //* User Configurable Settings
 $spreadsheetId = 'your_spreadsheet_id';
 
@@ -21,8 +24,6 @@ $sheetConfig = [
     'Sheet3' => ['mode' => 'unique', 'unique_column' => 'id'],
     'Sheet4' => ['mode' => 'upsert', 'unique_column' => 'id'],
 ];
-
-require_once 'vendor/autoload.php';
 
 class GoogleSheetImporter
 {
