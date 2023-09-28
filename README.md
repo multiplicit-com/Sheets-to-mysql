@@ -18,6 +18,7 @@ There are four possible import modes, which can be decided on individually for e
 0.2
 * Added "append mode" to add new rows to the bottom of the table
 * Added new "createtables" flag to cintrol whether the script can create new tables
+* Updated to use batch inserts
 
 0.11
 * added ability to only import new unique rows, with a nomonated primary key
