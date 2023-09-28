@@ -36,6 +36,6 @@ Remember to ensure that the mysqli extension is enabled, as the script uses mysq
 
 You will need to install the Google API Client Library for PHP via Composer, which requires PHP 5.4 or higher.
 
-This script shoudl be compatible with PHP 5.4 and above. 
-The script uses short array syntax [], which was introduced in PHP 5.4. 
-PHP 7 and Above: PHP 7 introduces several improvements and new features, but also deprecates some features and functions. This script does not use any functions which were deprecated in PHP 7 or 8. 
+This script should be compatible with PHP 5.4 and above. 
+
+The script uses short array syntax [], which was introduced in PHP 5.4. This script does not use any functions which were deprecated in PHP 7 or 8. 
