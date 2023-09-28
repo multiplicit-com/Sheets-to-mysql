@@ -1,5 +1,5 @@
 # Sheets-to-mysql
-A script to load a tab from sheets into a MYSql Database. 
+A PHP script to load a tab from sheets into a MYSql Database. 
 
 There are four possible import modes, which can be decided on individually for each tab.
 
