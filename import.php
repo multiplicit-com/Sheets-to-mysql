@@ -201,3 +201,4 @@ class GoogleSheetImporter
 $importer = new GoogleSheetImporter($spreadsheetId, $dbConfig, $sheetConfig, $createTables, $modifyTables);
 $importer->importSheets();
 
+?>
