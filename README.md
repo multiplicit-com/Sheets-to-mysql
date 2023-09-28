@@ -38,4 +38,4 @@ You will need to install the Google API Client Library for PHP via Composer, whi
 
 This script should be compatible with PHP 5.4 and above. 
 
-The script uses short array syntax, which was introduced in PHP 5.4. This script does not use any functions which were deprecated in PHP 7 or 8. 
+The script uses short array syntax, which was introduced in PHP 5.4. It does not use any functions which were deprecated in PHP 7 or 8. 
