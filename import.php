@@ -1,9 +1,12 @@
 <?php
 
-// User Configurable Settings
+//* User Configurable Settings
 $spreadsheetId = 'your_spreadsheet_id';
 
+//* Create tables which don't exist yet?
 $createTables = true;
+
+//* Insert columns which don't exist in the table yet?
 $modifyTables = true;
 
 $dbConfig = [
@@ -86,7 +89,7 @@ class GoogleSheetImporter
 
     private function createOrUpdateTable($tableName, $header)
     {
-        // Logic to create or update table based on header
+        //* Function create or update table based on header
         $columns = implode(', ', array_map(function ($col) {
             return "`$col` TEXT";
         }, $header));
@@ -96,7 +99,7 @@ class GoogleSheetImporter
 
     private function addNewColumns($tableName, $header)
     {
-        // Logic to check and add new columns in the table found in the header
+        //* Function check and add new columns in the table found in the header
         $existingColumns = $this->getColumns($tableName);
         $newColumns = array_diff($header, $existingColumns);
         foreach ($newColumns as $col) {
@@ -132,7 +135,7 @@ class GoogleSheetImporter
 
     private function insertUniqueRows($tableName, $header, $values, $uniqueColumn)
     {
-        // Logic to insert unique rows into the table based on the uniqueColumn
+        //* Function insert unique rows into the table based on the uniqueColumn
         $uniqueColumn = $this->conn->real_escape_string($uniqueColumn);
         foreach ($values as $row) {
             $rowData = array_combine($header, $row);
@@ -156,7 +159,7 @@ class GoogleSheetImporter
 
     private function upsertRows($tableName, $header, $values, $uniqueColumn)
     {
-        // Logic to upsert rows into the table based on the uniqueColumn
+        //* Function upsert rows into the table based on the uniqueColumn
         $uniqueColumn = $this->conn->real_escape_string($uniqueColumn);
         foreach ($values as $row) {
             $rowData = array_combine($header, $row);
@@ -185,7 +188,7 @@ class GoogleSheetImporter
 
     private function appendRows($tableName, $header, $values)
     {
-        // Logic to append rows to the existing table
+        //* Function append rows to the existing table
         $this->insertRows($tableName, $header, $values);
     }
 }
