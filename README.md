@@ -8,7 +8,9 @@ There are four possible import modes, which can be decided on individually for e
 * Only import new unique rows, decided by a single nominated column.
 * "Upsert" - add new rows and modify existing ones. Useful if there are extra columns that you want to retain.
 
+<hr>
 Versions
+
 0.3
 * Added "upsert" mode to add new rows and modify existing ones, useful if other scripts have changed columns in the table.
 * Added new "modifytables" flag to control whether the script can add new columns
