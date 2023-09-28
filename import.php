@@ -193,7 +193,7 @@ class GoogleSheetImporter
     }
 }
 
-// Instantiate the class and call the importSheets method
+//* Instantiate the class and call the importSheets method
 $importer = new GoogleSheetImporter($spreadsheetId, $dbConfig, $sheetConfig, $createTables, $modifyTables);
 $importer->importSheets();
 
