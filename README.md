@@ -9,7 +9,7 @@ There are four possible import modes, which can be decided on individually for e
 * "Upsert" - add new rows and modify existing ones. Useful if there are extra columns that you want to retain.
 
 <hr>
-Versions
+<strong></strong>Version History</strong>
 
 0.3
 * Added "upsert" mode to add new rows and modify existing ones, useful if other scripts have changed columns in the table.
