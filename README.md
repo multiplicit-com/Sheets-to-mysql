@@ -9,8 +9,7 @@ There are five possible import modes, which can be decided on individually for e
 **Insert Mode:**
 
 Description: Inserts all the rows from the Google Sheet into the MySQL table.
-
-Behavior: Every row from the Sheet is added to the table as a new row. There's no check for duplicate or existing rows.
+<br>Behavior: Every row from the Sheet is added to the table as a new row. There's no check for duplicate or existing rows.
 Use Case: Useful when you want to add all data from the sheet to the table regardless of whether some rows already exist in the table.
 
 **Replace Mode:**
