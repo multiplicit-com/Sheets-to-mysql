@@ -26,17 +26,6 @@ $sheetConfig = [
     'Sheet4' => ['mode' => 'upsert', 'unique_column' => 'id'],
 ];
 
-//* checks
-
-if (empty($dbConfig['host']) || empty($dbConfig['username']) || !isset($dbConfig['password']) || empty($dbConfig['database'])) {
-    die('Database configuration is incomplete');
-}
-
-if (empty($spreadsheetId)) {
-    die('Spreadsheet ID is not set.');
-}
-
-
 //* Variable checks
 
 if (empty($dbConfig['host']) || empty($dbConfig['username']) || !isset($dbConfig['password']) || empty($dbConfig['database'])) {
@@ -138,46 +127,51 @@ public function importSheets()
 
 
 
-private function printTableSummary($tableName, $time)
-{
-    // Check if the table exists
-    $tableExists = $this->conn->query("SHOW TABLES LIKE '$tableName'")->num_rows > 0;
+    private function printTableSummary($tableName, $time)
+    {
+        // Check if the table exists
+        $tableExists = $this->conn->query("SHOW TABLES LIKE '$tableName'")->num_rows > 0;
+        
+        if (!$tableExists) {
+            echo "Table $tableName does not exist\n";
+            return;
+        }
+        
+        // If the table exists, proceed with counting the rows
+        $result = $this->conn->query("SELECT COUNT(*) as count FROM `$tableName`");
+        
+        if (!$result) {
+            echo "Query failed: " . $this->conn->error . "\n";
+            return;
+        }
+        
+        $row = $result->fetch_assoc();
+        $count = $row['count'];
+        
+        if ($time === 'before') {
+            return("\nBefore import, table $tableName had $count rows.");
+        } else {
+            return("\nAfter import, table $tableName has $count rows.");
+        }
     
-    if (!$tableExists) {
-        echo "Table $tableName does not exist\n";
-        return;
     }
-    
-    // If the table exists, proceed with counting the rows
-    $result = $this->conn->query("SELECT COUNT(*) as count FROM `$tableName`");
-    
-    if (!$result) {
-        echo "Query failed: " . $this->conn->error . "\n";
-        return;
-    }
-    
-    $row = $result->fetch_assoc();
-    $count = $row['count'];
-    
-    if ($time === 'before') {
-        return("\nBefore import, table $tableName had $count rows.");
-    } else {
-        return("\nAfter import, table $tableName has $count rows.");
-    }
-
-}
-
-
 
 
     private function createOrUpdateTable($tableName, $header)
     {
-        $columns = implode(', ', array_map(function ($col) {
-            return "`$col` TEXT";
+        $columns = implode(', ', array_map(function ($col) use ($tableName) {
+            $sqlType = "TEXT";
+            if (isset($this->config[$tableName]['unique_column']) && $col == $this->config[$tableName]['unique_column']) {
+                $sqlType .= " PRIMARY KEY";
+            }
+            return "`$col` $sqlType";
         }, $header));
         $sql = "CREATE TABLE IF NOT EXISTS `$tableName` ($columns)";
-        $this->conn->query($sql);
+        if (!$this->conn->query($sql)) {
+            die("Failed to create or update table $tableName: " . $this->conn->error);
+        }
     }
+
 
     private function addNewColumns($tableName, $header)
     {
