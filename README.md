@@ -5,8 +5,6 @@ A PHP script to load a tab from Google Sheets into a MYSql Database.
 
 Two settings control how the script interacts with the database. These settings give you flexibility and control over how the script behaves, allowing you to choose between preserving the existing database structure and adapting it to accommodate new data structures from the sheets. 
 
-Be mindful that altering a table's structure in a production database can have unintended consequences - these settings allow you to "lock" the table structure when you're sure it won't change.
-
 <blockquote>
 
 <strong>$createTables:</strong>
@@ -23,6 +21,8 @@ When set to true, the script will check the existing structure of the tables in 
 If set to false, the script will not make any modifications to the table structures. Only the data in the columns that already exist in the tables will be imported, and any additional columns present in the sheets will be ignored.
 
 </blockquote>
+
+Be mindful that altering a table's structure in a production database can have unintended consequences and is not advised. These settings allow you to "lock" the table structure when you're sure it won't change.
 
 <hr>
 <strong>Import modes</strong>
