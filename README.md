@@ -4,7 +4,7 @@ A PHP script to load a tab from Google Sheets into a MYSql Database.
 <hr>
 <strong>Import modes</strong>
 
-There are four possible import modes, which can be decided on individually for each tab.
+There are five possible import modes, which can be decided on individually for each tab.
 
 **Insert Mode:**
 
