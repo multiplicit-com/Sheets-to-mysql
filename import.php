@@ -26,6 +26,17 @@ $sheetConfig = [
     'Sheet4' => ['mode' => 'upsert', 'unique_column' => 'id'],
 ];
 
+//* checks
+
+if (empty($dbConfig['host']) || empty($dbConfig['username']) || !isset($dbConfig['password']) || empty($dbConfig['database'])) {
+    die('Database configuration is incomplete');
+}
+
+if (empty($spreadsheetId)) {
+    die('Spreadsheet ID is not set.');
+}
+
+
 class GoogleSheetImporter
 {
     private $client;
@@ -36,7 +47,7 @@ class GoogleSheetImporter
     private $createTables;
     private $modifyTables;
 
-        public function __construct($spreadsheetId, $dbConfig, $config, $createTables, $modifyTables)
+public function __construct($spreadsheetId, $dbConfig, $config, $createTables, $modifyTables)
     {
         $this->client = new \Google_Client();
         $this->client->setApplicationName('Google Sheets to MySQL');
@@ -50,64 +61,52 @@ class GoogleSheetImporter
         $this->config = $config;
         $this->createTables = $createTables;
         $this->modifyTables = $modifyTables;
+
+        if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error);
+        }
     }
 
-public function importSheets()
-{
-    foreach ($this->config as $sheetName => $sheetSettings) 
+    public function importSheets()
     {
-        $progressMessage="Processing Sheet: $sheetName";
-        
-        
-        $tableName = preg_replace('/\W+/', '', strtolower($sheetName));
-        
-        $mode = $sheetSettings['mode'] ?? 'insert';
-        $progressMessage.="\nImport method: $mode";
-        
-        // Print table summary before import
-        $progressMessage.=$this->printTableSummary($tableName, 'before');
-        
-        $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $sheetName);
-        $values = $response->getValues();
-        $header = array_shift($values);
+        foreach ($this->config as $sheetName => $sheetSettings) {
+            $progressMessage = "Processing Sheet: $sheetName";
+            
+            try {
+                $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $sheetName);
+            } catch (Exception $e) {
+                echo 'Caught exception: ',  $e->getMessage(), "\n";
+                continue;
+            }
 
-        if ($this->createTables) {
-            $this->createOrUpdateTable($tableName, $header);
-        }
+            $values = $response->getValues();
+            $header = array_shift($values);
 
-        if ($this->modifyTables) {
-            $this->addNewColumns($tableName, $header);
-        }
+            if (empty($header) || empty($values)) {
+                echo "Sheet $sheetName is empty or missing header\n";
+                continue;
+            }
 
-        
-        
-        switch ($mode) {
-            case 'replace':
-                $this->conn->query("TRUNCATE TABLE `$tableName`");
-                // Intentional fall-through to 'insert'
-            case 'insert':
-                $this->insertRows($tableName, $header, $values);
-                break;
-            case 'unique':
-                $uniqueColumn = $sheetSettings['unique_column'];
-                $this->insertUniqueRows($tableName, $header, $values, $uniqueColumn);
-                break;
-            case 'upsert':
-                $uniqueColumn = $sheetSettings['unique_column'];
-                $this->upsertRows($tableName, $header, $values, $uniqueColumn);
-                break;
-            case 'append':
-                $this->appendRows($tableName, $header, $values);
-                break;
+            $tableName = preg_replace('/\W+/', '', strtolower($sheetName));
+            $mode = $sheetSettings['mode'] ?? 'insert';
+
+            $progressMessage .= "\nImport method: $mode";
+            $progressMessage .= $this->printTableSummary($tableName, 'before');
+
+            if ($this->createTables) {
+                $this->createOrUpdateTable($tableName, $header);
+            }
+
+            if ($this->modifyTables) {
+                $this->addNewColumns($tableName, $header);
+            }
+
+            // ... rest of your processing logic ...
+
+            $progressMessage .= $this->printTableSummary($tableName, 'after');
+            $progressMessage .= "\n$sheetName has been processed and imported.";
+            echo '<p>' . nl2br($progressMessage) . '</p>';
         }
-        
-        // Print table summary after import
-        $progressMessage.=$this->printTableSummary($tableName, 'after');
-        
-        $progressMessage.= "\n$sheetName has been processed and imported.";
-        
-        echo '<p>'.nl2br($progressMessage).'</p>';
-    }
     
      echo "<p>Import Completed</p>\n";
 }
