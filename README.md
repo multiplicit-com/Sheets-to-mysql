@@ -3,8 +3,9 @@ A PHP script to load a tab from Google Sheets into a MYSql Database.
 <hr>
 <strong>Settings</strong>
 
-Two settings control how the script interacts with the database. These settings give you flexibility and control over how the script behaves, allowing you to choose between preserving the existing database structure and adapting it to accommodate new data structures from the sheets. Be mindful that altering a table's structure in a production database can have unintended consequences - these settings allow you to "lock" the table structure when you're sure it won't change.
+Two settings control how the script interacts with the database. These settings give you flexibility and control over how the script behaves, allowing you to choose between preserving the existing database structure and adapting it to accommodate new data structures from the sheets. 
 
+Be mindful that altering a table's structure in a production database can have unintended consequences - these settings allow you to "lock" the table structure when you're sure it won't change.
 
 <strong>$createTables:</strong>
 
