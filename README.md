@@ -43,7 +43,8 @@ This script is being actively developed (Oct 2023) - it may not be stable yet.
 <strong>Version History</strong>
 
 0.31
-* Altered replace mode 
+* fix to bring replace mode into line with expected behaviour
+* Added basic confirmation message
 
 0.3
 * Added "upsert" mode to add new rows and modify existing ones, useful if other scripts have changed columns in the table.
