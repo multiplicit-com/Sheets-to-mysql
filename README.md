@@ -63,6 +63,8 @@ Use Case: Useful when you want to add only new data from the sheet, preventing a
 
 This script is being actively developed (Oct 2023) - it may not be stable yet.
 
+There are some validation / integrity checks, but it is likely to result in a 500 error if it is executed without all the appropraite credentials and settings.
+
 <hr>
 <strong>Version History</strong>
 
