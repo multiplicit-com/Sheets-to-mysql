@@ -71,6 +71,7 @@ There are some validation / integrity checks, but it is likely to result in a 50
 0.31
 * fix to bring replace mode into line with expected behaviour
 * Added basic confirmation message
+* Importing a table in Unique mode for the first time now also sets the unique column as the primary key
 
 0.3
 * Added "upsert" mode to add new rows and modify existing ones, useful if other scripts have changed columns in the table.
