@@ -6,6 +6,8 @@ A PHP script to load a tab from Google Sheets into a MYSql Database.
 
 There are four possible import modes, which can be decided on individually for each tab.
 
+<blockquote>
+
 **Append Mode:**
 
 Description: Inserts all the rows from the Google Sheet into the MySQL table.
@@ -29,6 +31,8 @@ Use Case: Useful when you have a mixture of new and updated rows in the Google S
 Description: Inserts only the unique rows based on a unique column.
 <br>Behavior: For each row in the Sheet, the script checks whether a row with the same unique column value exists in the table. If it doesn’t exist, a new row is inserted; if it does, the row is skipped.
 Use Case: Useful when you want to add only new data from the sheet, preventing any duplicate rows based on the unique column.
+
+</blockquote>
 
 <hr>
 
