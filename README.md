@@ -1,8 +1,12 @@
 # Sheets-to-mysql
 A PHP script to load a tab from Google Sheets into a MYSql Database. 
+<hr>
+**Settings**
+
+Be mindful that altering a table's structure in a production database can have unintended consequences.
 
 <hr>
-<strong>Import modes</strong>
+**Import modes**
 
 There are four possible import modes, which can be decided on individually for each tab you want to import from Sheets.
 
@@ -36,11 +40,12 @@ Use Case: Useful when you want to add only new data from the sheet, preventing a
 
 <hr>
 
-<strong>Please note</strong>
+**Please note**
+
 This script is being actively developed (Oct 2023) - it may not be stable yet.
 
 <hr>
-<strong>Version History</strong>
+**Version History**
 
 0.31
 * fix to bring replace mode into line with expected behaviour
