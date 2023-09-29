@@ -88,7 +88,8 @@ There are some validation / integrity checks, but it is likely to result in a 50
 * Initial release, load values from a Google sheet into a database table
 
 <hr>
-PHP and Dependencies
+<strong>PHP and Dependencies</strong>
+
 Remember to ensure that the mysqli extension is enabled, as the script uses mysqli for database interactions. 
 
 You will need to install the Google API Client Library for PHP via Composer, which requires PHP 5.4 or higher.
