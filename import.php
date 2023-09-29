@@ -105,11 +105,11 @@ public function importSheets()
         $progressMessage.=$this->printTableSummary($tableName, 'after');
         
         $progressMessage.= "\n$sheetName has been processed and imported.";
+        
+        echo '<p>'.nl2br($progressMessage).'</p>';
     }
     
-     echo '<p>'.nl2br($progressMessage).'</p>';
-     
-     //"Import Completed.\n";
+     echo "<p>Import Completed</p>\n";
 }
 
 
