@@ -15,29 +15,25 @@ Use Case: Useful when you want to add all data from the sheet to the table regar
 **Replace Mode:**
 
 Description: Replaces the entire MySQL table with the data from the Google Sheet.
-
-Behavior: The table is truncated (all existing data is deleted), and then all rows from the Sheet are inserted.
+<br>Behavior: The table is truncated (all existing data is deleted), and then all rows from the Sheet are inserted.
 Use Case: Useful when you want the table to exactly match the current state of the Google Sheet, removing any old data.
 
 **Upsert Mode:**
 
 Description: Inserts new rows and updates existing ones based on a unique column.
-
-Behavior: For each row in the Sheet, the script checks whether a row with the same unique column value exists in the table. If it does, the row is updated; if not, a new row is inserted.
+<br>Behavior: For each row in the Sheet, the script checks whether a row with the same unique column value exists in the table. If it does, the row is updated; if not, a new row is inserted.
 Use Case: Useful when you have a mixture of new and updated rows in the Google Sheet.
 
 **Append Mode:**
 
 Description: Appends all rows from the Google Sheet to the MySQL table.
-
-Behavior: Similar to Insert Mode, but can be differentiated by its use case.
+<br>Behavior: Similar to Insert Mode, but can be differentiated by its use case.
 Use Case: Useful when you want to keep adding new data to the table without affecting the existing rows, even if the sheet contains previously inserted rows.
 
 **Unique Mode:**
 
 Description: Inserts only the unique rows based on a unique column.
-
-Behavior: For each row in the Sheet, the script checks whether a row with the same unique column value exists in the table. If it doesn’t exist, a new row is inserted; if it does, the row is skipped.
+<br>Behavior: For each row in the Sheet, the script checks whether a row with the same unique column value exists in the table. If it doesn’t exist, a new row is inserted; if it does, the row is skipped.
 Use Case: Useful when you want to add only new data from the sheet, preventing any duplicate rows based on the unique column.
 
 <hr>
