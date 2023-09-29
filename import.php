@@ -52,51 +52,56 @@ class GoogleSheetImporter
         $this->modifyTables = $modifyTables;
     }
 
-    public function importSheets()
-    {
-        foreach ($this->config as $sheetName => $sheetSettings) {
-            echo "Processing Sheet: $sheetName\n";
-            $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $sheetName);
-            $values = $response->getValues();
-            $header = array_shift($values);
+public function importSheets()
+{
+    foreach ($this->config as $sheetName => $sheetSettings) {
+        echo "Processing Sheet: $sheetName\n";
+        $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $sheetName);
+        $values = $response->getValues();
+        $header = array_shift($values);
 
-            $tableName = preg_replace('/\W+/', '', strtolower($sheetName));
+        $tableName = preg_replace('/\W+/', '', strtolower($sheetName));
 
-            if ($this->createTables) {
-                $this->createOrUpdateTable($tableName, $header);
-            }
+        // Print the number of rows before the import
+        $result = $this->conn->query("SELECT COUNT(*) as count FROM `$tableName`");
+        $rowCountBefore = $result->fetch_assoc()['count'];
+        echo "$rowCountBefore rows in $tableName before import\n";
 
-            if ($this->modifyTables) {
-                $this->addNewColumns($tableName, $header);
-            }
-
-            $mode = $sheetSettings['mode'] ?? 'insert';
-            $rowCount = 0;
-            switch ($mode) {
-                case 'replace':
-                    $this->conn->query("TRUNCATE TABLE `$tableName`");
-                    // Intentional fall-through to 'insert'
-                case 'insert':
-                    $rowCount = $this->insertRows($tableName, $header, $values);
-                    break;
-                case 'unique':
-                    $uniqueColumn = $sheetSettings['unique_column'];
-                    $rowCount = $this->insertUniqueRows($tableName, $header, $values, $uniqueColumn);
-                    break;
-                case 'upsert':
-                    $uniqueColumn = $sheetSettings['unique_column'];
-                    $rowCount = $this->upsertRows($tableName, $header, $values, $uniqueColumn);
-                    break;
-                case 'append':
-                    $rowCount = $this->appendRows($tableName, $header, $values);
-                    break;
-            }
-            echo $rowCount;
-            print $rowCount;
-            echo "$rowCount rows processed from $sheetName into $tableName\n";
+        if ($this->createTables) {
+            $this->createOrUpdateTable($tableName, $header);
         }
-        echo "Import Completed.\n";
+
+        if ($this->modifyTables) {
+            $this->addNewColumns($tableName, $header);
+        }
+
+        $mode = $sheetSettings['mode'] ?? 'insert';
+        switch ($mode) {
+            case 'replace':
+                $this->conn->query("TRUNCATE TABLE `$tableName`");
+            case 'insert':
+                $this->insertRows($tableName, $header, $values);
+                break;
+            case 'unique':
+                $uniqueColumn = $sheetSettings['unique_column'];
+                $this->insertUniqueRows($tableName, $header, $values, $uniqueColumn);
+                break;
+            case 'upsert':
+                $uniqueColumn = $sheetSettings['unique_column'];
+                $this->upsertRows($tableName, $header, $values, $uniqueColumn);
+                break;
+            case 'append':
+                $this->appendRows($tableName, $header, $values);
+                break;
+        }
+
+        // Print the number of rows after the import
+        $result = $this->conn->query("SELECT COUNT(*) as count FROM `$tableName`");
+        $rowCountAfter = $result->fetch_assoc()['count'];
+        echo "$rowCountAfter rows in $tableName after import\n";
     }
+    echo "Import Completed.\n";
+}
 
     private function createOrUpdateTable($tableName, $header)
     {
