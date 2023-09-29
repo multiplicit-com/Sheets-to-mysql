@@ -4,7 +4,7 @@ A PHP script to load a tab from Google Sheets into a MYSql Database.
 <hr>
 <strong>Import modes</strong>
 
-There are five possible import modes, which can be decided on individually for each tab.
+There are four possible import modes, which can be decided on individually for each tab.
 
 **Append Mode:**
 
@@ -24,8 +24,6 @@ Description: Inserts new rows and updates existing ones based on a unique column
 <br>Behavior: For each row in the Sheet, the script checks whether a row with the same unique column value exists in the table. If it does, the row is updated; if not, a new row is inserted.
 Use Case: Useful when you have a mixture of new and updated rows in the Google Sheet.
 
-
-
 **Unique Mode:**
 
 Description: Inserts only the unique rows based on a unique column.
@@ -33,6 +31,7 @@ Description: Inserts only the unique rows based on a unique column.
 Use Case: Useful when you want to add only new data from the sheet, preventing any duplicate rows based on the unique column.
 
 <hr>
+
 <strong>Please note</strong>
 This script is being actively developed (Oct 2023) - it may not be stable yet.
 
