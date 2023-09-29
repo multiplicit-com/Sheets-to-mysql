@@ -54,18 +54,20 @@ class GoogleSheetImporter
 
 public function importSheets()
 {
-    foreach ($this->config as $sheetName => $sheetSettings) {
-        echo "Processing Sheet: $sheetName\n";
+    foreach ($this->config as $sheetName => $sheetSettings) 
+    {
+        $progressMessage="Processing Sheet: $sheetName";
+        
+        $progressMessage="Method: $sheetName";
+        
+        $tableName = preg_replace('/\W+/', '', strtolower($sheetName));
+        
+        // Print table summary before import
+        $progressMessage.=$this->printTableSummary($tableName, 'before');
+        
         $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $sheetName);
         $values = $response->getValues();
         $header = array_shift($values);
-
-        $tableName = preg_replace('/\W+/', '', strtolower($sheetName));
-
-        // Print the number of rows before the import
-        $result = $this->conn->query("SELECT COUNT(*) as count FROM `$tableName`");
-        $rowCountBefore = $result->fetch_assoc()['count'];
-        echo "$rowCountBefore rows in $tableName before import\n";
 
         if ($this->createTables) {
             $this->createOrUpdateTable($tableName, $header);
@@ -79,6 +81,7 @@ public function importSheets()
         switch ($mode) {
             case 'replace':
                 $this->conn->query("TRUNCATE TABLE `$tableName`");
+                // Intentional fall-through to 'insert'
             case 'insert':
                 $this->insertRows($tableName, $header, $values);
                 break;
@@ -94,13 +97,30 @@ public function importSheets()
                 $this->appendRows($tableName, $header, $values);
                 break;
         }
-
-        // Print the number of rows after the import
-        $result = $this->conn->query("SELECT COUNT(*) as count FROM `$tableName`");
-        $rowCountAfter = $result->fetch_assoc()['count'];
-        echo "$rowCountAfter rows in $tableName after import\n";
+        
+        // Print table summary after import
+        $progressMessage.=$this->printTableSummary($tableName, 'after');
+        
+        $progressMessage.= "\n$sheetName has been processed and imported into $tableName";
     }
-    echo "Import Completed.\n";
+    
+     echo '<p>'.nl2br($progressMessage).'</p>';
+     
+     //"Import Completed.\n";
+}
+
+private function printTableSummary($tableName, $time)
+{
+    $result = $this->conn->query("SELECT COUNT(*) as count FROM `$tableName`");
+    $row = $result->fetch_assoc();
+    $count = $row['count'];
+    
+    if ($time === 'before') {
+        return("\nBefore import, table $tableName had $count rows.");
+    } else {
+        return("\nAfter import, table $tableName has $count rows.");
+    }
+    
 }
 
     private function createOrUpdateTable($tableName, $header)
