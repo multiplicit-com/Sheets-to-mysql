@@ -1,12 +1,12 @@
 # Sheets-to-mysql
 A PHP script to load a tab from Google Sheets into a MYSql Database. 
 <hr>
-**Settings**
+Settings
 
 Be mindful that altering a table's structure in a production database can have unintended consequences.
 
 <hr>
-**Import modes**
+Import modes
 
 There are four possible import modes, which can be decided on individually for each tab you want to import from Sheets.
 
@@ -45,7 +45,7 @@ Use Case: Useful when you want to add only new data from the sheet, preventing a
 This script is being actively developed (Oct 2023) - it may not be stable yet.
 
 <hr>
-**Version History**
+Version History
 
 0.31
 * fix to bring replace mode into line with expected behaviour
@@ -67,7 +67,7 @@ This script is being actively developed (Oct 2023) - it may not be stable yet.
 * Initial release, load values from a Google sheet into a database table
 
 <hr>
-<strong>PHP and Dependencies</strong>
+PHP and Dependencies
 Remember to ensure that the mysqli extension is enabled, as the script uses mysqli for database interactions. 
 
 You will need to install the Google API Client Library for PHP via Composer, which requires PHP 5.4 or higher.
