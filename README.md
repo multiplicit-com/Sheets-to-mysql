@@ -17,7 +17,7 @@ If set to false, the script will not create any new tables, and it will only att
 
 
 <strong>$modifyTables:</strong>
-
+ 
 When set to true, the script will check the existing structure of the tables in the database against the columns in the sheets. If a sheet contains columns that do not exist in the corresponding table, the script will modify the table structure by adding the new columns.
 
 If set to false, the script will not make any modifications to the table structures. Only the data in the columns that already exist in the tables will be imported, and any additional columns present in the sheets will be ignored.
@@ -59,8 +59,8 @@ Use Case: Useful when you want to add only new data from the sheet, preventing a
 
 <hr>
 
-**Please note**
-
+<strong>Please note</strong>
+ 
 This script is being actively developed (Oct 2023) - it may not be stable yet.
 
 There are some validation / integrity checks, but it is likely to result in a 500 error if it is executed without all the appropraite credentials and settings.
@@ -89,7 +89,7 @@ There are some validation / integrity checks, but it is likely to result in a 50
 
 <hr>
 <strong>PHP and Dependencies</strong>
-
+ 
 Remember to ensure that the mysqli extension is enabled, as the script uses mysqli for database interactions. 
 
 You will need to install the Google API Client Library for PHP via Composer, which requires PHP 5.4 or higher.
