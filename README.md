@@ -6,17 +6,11 @@ A PHP script to load a tab from Google Sheets into a MYSql Database.
 
 There are five possible import modes, which can be decided on individually for each tab.
 
-**Insert Mode:**
+**Append Mode:**
 
 Description: Inserts all the rows from the Google Sheet into the MySQL table.
 <br>Behavior: Every row from the Sheet is added to the table as a new row. There is no check for duplicate or existing rows.
 Use Case: Useful when you want to add all data from the sheet to the table regardless of whether some rows already exist in the table.
-
-**Append Mode:**
-
-Description: Appends all rows from the Google Sheet to the MySQL table.
-<br>Behavior: Similar to Insert Mode, but can be differentiated by its use case.
-Use Case: Useful when you want to keep adding new data to the table without affecting the existing rows, even if the sheet contains previously inserted rows.
 
 **Replace Mode:**
 
