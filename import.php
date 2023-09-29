@@ -58,9 +58,11 @@ public function importSheets()
     {
         $progressMessage="Processing Sheet: $sheetName";
         
-        $progressMessage="Method: $sheetName";
         
         $tableName = preg_replace('/\W+/', '', strtolower($sheetName));
+        
+        $mode = $sheetSettings['mode'] ?? 'insert';
+        $progressMessage.="\nImport method: $mode";
         
         // Print table summary before import
         $progressMessage.=$this->printTableSummary($tableName, 'before');
@@ -77,7 +79,8 @@ public function importSheets()
             $this->addNewColumns($tableName, $header);
         }
 
-        $mode = $sheetSettings['mode'] ?? 'insert';
+        
+        
         switch ($mode) {
             case 'replace':
                 $this->conn->query("TRUNCATE TABLE `$tableName`");
@@ -101,7 +104,7 @@ public function importSheets()
         // Print table summary after import
         $progressMessage.=$this->printTableSummary($tableName, 'after');
         
-        $progressMessage.= "\n$sheetName has been processed and imported into $tableName";
+        $progressMessage.= "\n$sheetName has been processed and imported.";
     }
     
      echo '<p>'.nl2br($progressMessage).'</p>';
