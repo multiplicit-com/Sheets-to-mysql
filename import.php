@@ -36,14 +36,14 @@ class GoogleSheetImporter
     private $createTables;
     private $modifyTables;
 
-    public function __construct($spreadsheetId, $dbConfig, $config, $createTables, $modifyTables)
+        public function __construct($spreadsheetId, $dbConfig, $config, $createTables, $modifyTables)
     {
         $this->client = new \Google_Client();
         $this->client->setApplicationName('Google Sheets to MySQL');
         $this->client->setScopes([\Google_Service_Sheets::SPREADSHEETS_READONLY]);
         $this->client->setAccessType('offline');
-        $this->client->setAuthConfig('/path/to/credentials.json');
-        
+        $this->client->setAuthConfig('credentials.json');
+
         $this->service = new \Google_Service_Sheets($this->client);
         $this->spreadsheetId = $spreadsheetId;
         $this->conn = new mysqli($dbConfig['host'], $dbConfig['username'], $dbConfig['password'], $dbConfig['database']);
@@ -55,6 +55,7 @@ class GoogleSheetImporter
     public function importSheets()
     {
         foreach ($this->config as $sheetName => $sheetSettings) {
+            echo "Processing Sheet: $sheetName\n";
             $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $sheetName);
             $values = $response->getValues();
             $header = array_shift($values);
@@ -70,23 +71,31 @@ class GoogleSheetImporter
             }
 
             $mode = $sheetSettings['mode'] ?? 'insert';
+            $rowCount = 0;
             switch ($mode) {
+                case 'replace':
+                    $this->conn->query("TRUNCATE TABLE `$tableName`");
+                    // Intentional fall-through to 'insert'
                 case 'insert':
-                    $this->insertRows($tableName, $header, $values);
+                    $rowCount = $this->insertRows($tableName, $header, $values);
                     break;
                 case 'unique':
                     $uniqueColumn = $sheetSettings['unique_column'];
-                    $this->insertUniqueRows($tableName, $header, $values, $uniqueColumn);
+                    $rowCount = $this->insertUniqueRows($tableName, $header, $values, $uniqueColumn);
                     break;
                 case 'upsert':
                     $uniqueColumn = $sheetSettings['unique_column'];
-                    $this->upsertRows($tableName, $header, $values, $uniqueColumn);
+                    $rowCount = $this->upsertRows($tableName, $header, $values, $uniqueColumn);
                     break;
                 case 'append':
-                    $this->appendRows($tableName, $header, $values);
+                    $rowCount = $this->appendRows($tableName, $header, $values);
                     break;
             }
+            echo $rowCount;
+            print $rowCount;
+            echo "$rowCount rows processed from $sheetName into $tableName\n";
         }
+        echo "Import Completed.\n";
     }
 
     private function createOrUpdateTable($tableName, $header)
@@ -198,7 +207,7 @@ class GoogleSheetImporter
     }
 }
 
-$importer = new GoogleSheetImporter($spreadsheetId, $dbConfig, $sheetConfig, $createTables, $modifyTables);
-$importer->importSheets();
+ $importer = new GoogleSheetImporter($spreadsheetId, $dbConfig, $sheetConfig, $createTables, $modifyTables);
+ $importer->importSheets();
 
 ?>
