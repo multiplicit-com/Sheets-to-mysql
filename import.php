@@ -112,9 +112,26 @@ public function importSheets()
      //"Import Completed.\n";
 }
 
+
+
 private function printTableSummary($tableName, $time)
 {
+    // Check if the table exists
+    $tableExists = $this->conn->query("SHOW TABLES LIKE '$tableName'")->num_rows > 0;
+    
+    if (!$tableExists) {
+        echo "Table $tableName does not exist\n";
+        return;
+    }
+    
+    // If the table exists, proceed with counting the rows
     $result = $this->conn->query("SELECT COUNT(*) as count FROM `$tableName`");
+    
+    if (!$result) {
+        echo "Query failed: " . $this->conn->error . "\n";
+        return;
+    }
+    
     $row = $result->fetch_assoc();
     $count = $row['count'];
     
@@ -123,8 +140,11 @@ private function printTableSummary($tableName, $time)
     } else {
         return("\nAfter import, table $tableName has $count rows.");
     }
-    
+
 }
+
+
+
 
     private function createOrUpdateTable($tableName, $header)
     {
