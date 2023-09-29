@@ -1,7 +1,7 @@
 # Sheets-to-mysql
 A PHP script to load a tab from Google Sheets into a MYSql Database. 
 <hr>
-**Settings**
+_Settings_
 
 Be mindful that altering a table's structure in a production database can have unintended consequences.
 
