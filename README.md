@@ -9,8 +9,14 @@ There are five possible import modes, which can be decided on individually for e
 **Insert Mode:**
 
 Description: Inserts all the rows from the Google Sheet into the MySQL table.
-<br>Behavior: Every row from the Sheet is added to the table as a new row. There's no check for duplicate or existing rows.
+<br>Behavior: Every row from the Sheet is added to the table as a new row. There is no check for duplicate or existing rows.
 Use Case: Useful when you want to add all data from the sheet to the table regardless of whether some rows already exist in the table.
+
+**Append Mode:**
+
+Description: Appends all rows from the Google Sheet to the MySQL table.
+<br>Behavior: Similar to Insert Mode, but can be differentiated by its use case.
+Use Case: Useful when you want to keep adding new data to the table without affecting the existing rows, even if the sheet contains previously inserted rows.
 
 **Replace Mode:**
 
@@ -24,11 +30,7 @@ Description: Inserts new rows and updates existing ones based on a unique column
 <br>Behavior: For each row in the Sheet, the script checks whether a row with the same unique column value exists in the table. If it does, the row is updated; if not, a new row is inserted.
 Use Case: Useful when you have a mixture of new and updated rows in the Google Sheet.
 
-**Append Mode:**
 
-Description: Appends all rows from the Google Sheet to the MySQL table.
-<br>Behavior: Similar to Insert Mode, but can be differentiated by its use case.
-Use Case: Useful when you want to keep adding new data to the table without affecting the existing rows, even if the sheet contains previously inserted rows.
 
 **Unique Mode:**
 
@@ -42,6 +44,9 @@ This script is being actively developed (Oct 2023) - it may not be stable yet.
 
 <hr>
 <strong>Version History</strong>
+
+0.31
+* Altered replace mode 
 
 0.3
 * Added "upsert" mode to add new rows and modify existing ones, useful if other scripts have changed columns in the table.
