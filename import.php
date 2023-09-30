@@ -236,26 +236,25 @@ public function importSheets()
 
     private function upsertRows($tableName, $header, $values, $uniqueColumn)
     {
-        $rowsSql = [];
-        foreach ($values as $row) {
-            $rowData = array_combine($header, $row);
-            $valuesStr = implode(', ', array_map(function ($val) {
-                return "'" . $this->conn->real_escape_string($val) . "'";
-            }, $rowData));
-            $rowsSql[] = "($valuesStr)";
-            $updateStr = implode(', ', array_map(function ($col, $val) {
-                return "`$col` = '" . $this->conn->real_escape_string($val) . "'";
-            }, array_keys($rowData), $rowData));
-            $updateSql[] = $updateStr;
-        }
-        if (!empty($rowsSql)) {
-            $columns = implode(', ', array_map(function ($col) {
-                return "`$col`";
-            }, $header));
-            $sql = "INSERT INTO `$tableName` ($columns) VALUES " . implode(', ', $rowsSql) . " ON DUPLICATE KEY UPDATE " . implode(', ', $updateSql);
-            $this->conn->query($sql);
-        }
+    $rowsSql = [];
+    foreach ($values as $row) {
+        $rowData = array_combine($header, $row);
+        $valuesStr = implode(', ', array_map(function ($val) {
+            return "'" . $this->conn->real_escape_string($val) . "'";
+        }, $rowData));
+        $rowsSql[] = "($valuesStr)";
     }
+    if (!empty($rowsSql)) {
+        $columns = implode(', ', array_map(function ($col) {
+            return "`$col`";
+        }, $header));
+        $updateStr = implode(', ', array_map(function ($col) {
+            return "`$col` = VALUES(`$col`)";
+        }, $header));
+        $sql = "INSERT INTO `$tableName` ($columns) VALUES " . implode(', ', $rowsSql) . " ON DUPLICATE KEY UPDATE " . $updateStr;
+        $this->conn->query($sql);
+    }
+    }    
 
     private function appendRows($tableName, $header, $values)
     {
